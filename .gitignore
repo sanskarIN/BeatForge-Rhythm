@@ -1,0 +1,22 @@
+.godot/
+.import/
+.export/
+.cache/
+bin/
+obj/
+.vs/
+*.suo
+*.user
+*.userprefs
+*.tmp
+*.apk
+*.aab
+.keystore
+key.properties
+.DS_Store
+
+# Local Godot/editor data
+.godot/mono/
+
+# Local test/build output
+TestResults/

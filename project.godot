@@ -1,0 +1,32 @@
+; Engine configuration file.
+; BeatForge: Rhythm Lab - Godot 4 C# client
+; Made by the Sanskar
+config_version=5
+
+[application]
+config/name="BeatForge: Rhythm Lab"
+run/main_scene="res://Scenes/Main.tscn"
+config/features=PackedStringArray("4.3", "C#")
+config/icon="res://assets/icon.svg"
+
+[display]
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/size/window_width_override=540
+window/size/window_height_override=960
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.035, 0.047, 0.09, 1)
+
+[audio]
+default_volume_db=0.0
+
+[gui]
+theme/default_font_multichannel_signed_distance_field=true
+
+[input]
+ui_accept={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":32)]}
+beatforge_back={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":4194305)]}

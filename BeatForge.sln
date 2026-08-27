@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatForge.Core", "src\BeatForge.Core\BeatForge.Core.csproj", "{B6C0D934-9A5B-4A88-9B25-0D5E1EEA0A11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatForge.Core.Tests", "tests\BeatForge.Core.Tests\BeatForge.Core.Tests.csproj", "{D4BD31B3-A8D9-4BE5-B1A0-67281853F03A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6C0D934-9A5B-4A88-9B25-0D5E1EEA0A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6C0D934-9A5B-4A88-9B25-0D5E1EEA0A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4BD31B3-A8D9-4BE5-B1A0-67281853F03A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4BD31B3-A8D9-4BE5-B1A0-67281853F03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4BD31B3-A8D9-4BE5-B1A0-67281853F03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

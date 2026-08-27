@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "id": "pulse-garden",
+    "title": "Pulse Garden",
+    "artist": "BeatForge Original",
+    "author": "Sanskar",
+    "difficulty": "Easy",
+    "difficultyRating": 2,
+    "tags": ["original", "starter", "offline"],
+    "audioFile": ""
+  },
+  "initialBpm": 120,
+  "beatOffsetSeconds": 0,
+  "laneCount": 4,
+  "bpmChanges": [],
+  "notes": [
+    { "id": "pg-001", "beat": 1, "lane": 0, "type": "Tap", "durationBeats": 0, "direction": 0 },
+    { "id": "pg-002", "beat": 2, "lane": 1, "type": "Tap", "durationBeats": 0, "direction": 0 },
+    { "id": "pg-003", "beat": 3, "lane": 2, "type": "Tap", "durationBeats": 0, "direction": 0 },
+    { "id": "pg-004", "beat": 4, "lane": 3, "type": "Hold", "durationBeats": 1, "direction": 0 },
+    { "id": "pg-005", "beat": 6, "lane": 1, "type": "Swipe", "durationBeats": 0, "direction": 1 },
+    { "id": "pg-006", "beat": 7, "lane": 2, "type": "Tap", "durationBeats": 0, "direction": 0 },
+    { "id": "pg-007", "beat": 8, "lane": 0, "type": "Simultaneous", "durationBeats": 0, "direction": 0 },
+    { "id": "pg-008", "beat": 8, "lane": 3, "type": "Simultaneous", "durationBeats": 0, "direction": 0 }
+  ]
+}
