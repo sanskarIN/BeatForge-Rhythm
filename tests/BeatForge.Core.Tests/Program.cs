@@ -21,6 +21,8 @@ static class Program
         Run("song library searches and records results", TestLibrary);
         Run("achievement catalog is extensible", TestAchievements);
         Run("campaign progression unlocks stages", TestCampaign);
+        Run("song clock pauses and corrects calibrated timestamps", TestSongClock);
+        Run("note judger handles lanes directions and holds", TestNoteJudger);
         Console.WriteLine($"{_passed} passed, {_failed} failed");
         return _failed == 0 ? 0 : 1;
     }
@@ -136,6 +138,18 @@ static class Program
     private static void TestCampaign()
     {
         var worlds = CampaignCatalog.CreateDefault(); var progress = new CampaignProgress(); progress.RecordStage("world-1-stage-1", 3, worlds); AssertTrue(progress.IsUnlocked(worlds[0].Stages[1])); AssertEqual(3, progress.TotalStars);
+    }
+
+    private static void TestSongClock()
+    {
+        var clock = new SongClock(Chart()); clock.Tick(0.5); AssertNear(0.5, clock.PositionSeconds); clock.AudioOffsetMs = 20; clock.InputOffsetMs = -10; AssertNear(0.01, clock.CorrectInputTimestamp(0)); clock.Pause(); clock.Tick(2); AssertNear(0.5, clock.PositionSeconds); clock.Resume(); clock.Tick(0.25); AssertNear(0.75, clock.PositionSeconds);
+    }
+
+    private static void TestNoteJudger()
+    {
+        var judger = new NoteJudger(); var tap = Chart().Notes[0]; AssertTrue(judger.Evaluate(tap, 1, 0).Accepted); AssertTrue(!judger.Evaluate(tap, 0, 0).Accepted);
+        var swipe = tap with { Type = NoteType.DirectionalSwipe, Direction = 2 }; AssertTrue(!judger.Evaluate(swipe, 1, 0, 1).Accepted); AssertTrue(judger.Evaluate(swipe, 1, 0, 2).Accepted);
+        var hold = tap with { Type = NoteType.Hold, DurationBeats = 2 }; AssertTrue(judger.IsHoldComplete(hold, 1.05, 0)); AssertTrue(!judger.IsHoldComplete(hold, 0.5, 0));
     }
 
     private static void Run(string name, Action test)
