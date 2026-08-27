@@ -35,6 +35,11 @@ public partial class RhythmGame : Control
         AddChild(new ColorRect { Color = new Color("080c1d"), MouseFilter = MouseFilterEnum.Ignore });
         _audioPlayer = new AudioStreamPlayer { Name = "SongAudio" }; AddChild(_audioPlayer);
         _songClock = new SongClock(_chart, new GodotAudioPositionSource(_audioPlayer));
+        if (_chart.Metadata.AudioFile.StartsWith("res://", StringComparison.Ordinal) && ResourceLoader.Exists(_chart.Metadata.AudioFile))
+        {
+            _audioPlayer.Stream = ResourceLoader.Load<AudioStream>(_chart.Metadata.AudioFile);
+            _audioPlayer.Play();
+        }
         var top = new HBoxContainer(); top.Position = new Vector2(24, 30); top.Size = new Vector2(1032, 80); AddChild(top);
         var back = new Button { Text = "‹", CustomMinimumSize = new Vector2(70, 60) }; back.Pressed += _back; top.AddChild(back);
         var title = new Label { Text = _practice ? "PRACTICE" : "PLAY" }; title.AddThemeFontSizeOverride("font_size", 24); top.AddChild(title);

@@ -8,6 +8,8 @@ The repository has a `develop` branch with a repository-local Git identity of `S
 
 The second implementation slice adds real offline player progression. Settings, calibration history, statistics, favorites, best scores, achievement unlocks, and campaign progress are stored in versioned JSON through an atomic local data store. A future SQLite adapter can replace the file store without coupling gameplay to a database engine.
 
+The third implementation slice adds a real audio-clock boundary and richer note interaction. `SongClock` reads an audio-position source when a track is available, falls back deterministically when no audio is bundled, applies audio and input calibration offsets, and freezes/resumes at the same position across pauses. `NoteJudger` validates lanes, directional swipes, configurable timing windows, and hold/slide completion. The Godot gameplay screen now owns an `AudioStreamPlayer` adapter, displays the active clock source, uses calibrated timing calculations, supports press/release lane input for holds, and colors swipe/hold notes distinctly. The settings screen opens a working eight-sample calibration flow with a persistent median offset and reset-history action.
+
 ## Product and repository foundation
 
 The project is configured as `BeatForge: Rhythm Lab`, with Android-first viewport settings, a dark visual baseline, an original SVG icon, and a Godot main scene. The root includes the Apache 2.0 license, NOTICE, README, architecture guide, build guide, testing strategy, roadmap, changelog, contributing guide, code of conduct, security policy, privacy policy, and support policy. The README and About screen prominently include the optional Buy Me a Coffee link without gating gameplay.
@@ -36,9 +38,11 @@ The main menu provides navigation to Play, Song Library, Campaign, Practice Mode
 
 The core test runner covers constant BPM conversion, BPM changes, timing-window boundaries, score/combo/grade behavior, JSON round trips, malformed chart rejection, editor undo/redo correctness, replay recording and portability, calibration, local persistence, library search, achievement catalog extensibility, and campaign unlocking. The complete Godot solution compiled successfully with .NET 8 in the development environment, and the suite reports 14 passing checks. Godot runtime and device interaction should still be exercised in the Godot 4 .NET editor and on Android hardware.
 
+After this phase, the complete Godot solution still compiles with 0 warnings and 0 errors, and the deterministic suite reports 16 passing checks. The repository intentionally still contains no bundled music; any future `audioFile` must reference original or properly licensed content.
+
 ## Remaining planned phases
 
-The full master prompt is larger than one safe implementation slice. The next meaningful phases are audio playback and calibration with an actual Godot audio clock; persistent SQLite-backed song library, statistics, achievements, and settings; full note interaction for holds/swipes/chains/slides; campaign and daily/weekly challenge content; replay viewer; mobile file-picker integration; accessibility refinement; waveform generation; Android export and device testing; performance profiling; and production release packaging. These are recorded in `ROADMAP.md` rather than represented as fake controls or empty placeholder systems.
+The full master prompt is larger than one safe implementation slice. The next meaningful phases are full note interaction for chains and advanced slides; campaign and daily/weekly challenge content; replay viewer; mobile file-picker integration; accessibility refinement; waveform generation; Android export and device testing; performance profiling; and production release packaging. These are recorded in `ROADMAP.md` rather than represented as fake controls or empty placeholder systems.
 
 ## Commits in this phase
 
@@ -54,3 +58,5 @@ The full master prompt is larger than one safe implementation slice. The next me
 | `b0a0ede` | `feat: persist library and accessibility settings` |
 | `5fbde94` | `feat: add replay portability and campaign browser` |
 | `fa0210f` | `docs: document offline progression phase` |
+| `1d36ffc` | `feat: add audio clock and note judgement` |
+| `2790159` | `feat: add synchronized gameplay and calibration workflow` |
