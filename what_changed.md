@@ -53,4 +53,4 @@ The full master prompt is larger than one safe implementation slice. The next me
 | `ce7117f` | `test: verify player progression persistence` |
 | `b0a0ede` | `feat: persist library and accessibility settings` |
 | `5fbde94` | `feat: add replay portability and campaign browser` |
-| current | `docs: record phase changes` |
+| `fa0210f` | `docs: document offline progression phase` |
