@@ -14,4 +14,4 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
-      - run: dotnet test BeatForge.sln --configuration Release --nologo
+      - run: dotnet run --project tests/BeatForge.Core.Tests/BeatForge.Core.Tests.csproj --configuration Release

@@ -22,7 +22,7 @@ The code deliberately ships no commercial music. Add only original or properly l
 
 1. Install [Godot 4 .NET](https://godotengine.org/download/archive/) and the .NET 8 SDK.
 2. Open this folder in Godot and run `Scenes/Main.tscn`.
-3. Run the portable core tests with `dotnet test BeatForge.sln`.
+3. Run the portable core tests with `dotnet run --project tests/BeatForge.Core.Tests/BeatForge.Core.Tests.csproj`.
 
 The CI workflow runs the core test project on every push and pull request.
 
