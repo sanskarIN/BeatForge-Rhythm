@@ -15,6 +15,11 @@ static class Program
         Run("validator rejects malformed charts", TestValidation);
         Run("editor undo and redo restore edits", TestEditorUndoRedo);
         Run("replay records inputs and judgements", TestReplay);
+        Run("calibration calculates and clamps offsets", TestCalibration);
+        Run("local player data saves and loads atomically", TestLocalData);
+        Run("song library searches and records results", TestLibrary);
+        Run("achievement catalog is extensible", TestAchievements);
+        Run("campaign progression unlocks stages", TestCampaign);
         Console.WriteLine($"{_passed} passed, {_failed} failed");
         return _failed == 0 ? 0 : 1;
     }
@@ -86,6 +91,43 @@ static class Program
     {
         var replay = new ReplayRecorder("chart", 1); replay.RecordInput(1.2, 2, "hit"); replay.RecordJudgement(1.2, "n1", Judgement.Perfect, 4);
         AssertEqual("chart", replay.Data.ChartId); AssertEqual(1, replay.Data.Inputs.Count); AssertEqual(Judgement.Perfect, replay.Data.Judgements[0].Judgement);
+    }
+
+    private static void TestCalibration()
+    {
+        var profile = new CalibrationProfile(); var engine = new CalibrationEngine(profile);
+        var corrected = engine.ApplyAutomaticInputCalibration([new(1, 1.03), new(2, 2.04), new(3, 3.02)]);
+        AssertNear(-30, corrected); AssertEqual(1, profile.History.Count);
+        profile.ApplyManual(900, -900); AssertNear(500, profile.AudioOffsetMs); AssertNear(-500, profile.InputOffsetMs);
+    }
+
+    private static void TestLocalData()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"beatforge-test-{Guid.NewGuid():N}.json");
+        try
+        {
+            var data = new LocalPlayerData(); data.Settings.Theme = "amoled"; data.Statistics.SetDailyChallengeStreak(3); data.UnlockedAchievements.Add("first-beat");
+            var store = new LocalDataStore(path); store.Save(data); var loaded = store.Load();
+            AssertEqual("amoled", loaded.Settings.Theme); AssertEqual(3, loaded.Statistics.DailyChallengeStreak); AssertTrue(loaded.UnlockedAchievements.Contains("first-beat"));
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+    }
+
+    private static void TestLibrary()
+    {
+        var library = new SongLibrary(); var chart = Chart(); chart.Metadata = chart.Metadata with { Title = "Moon Pulse", Tags = ["night"] }; library.AddOrReplace(new SongEntry { Chart = chart });
+        AssertEqual(1, library.Query(new LibraryQuery { Search = "moon" }).Count); AssertTrue(library.ToggleFavorite("test")); AssertEqual(1, library.Query(new LibraryQuery { FavoritesOnly = true }).Count);
+        library.RecordResult("test", new PlayRecord { ChartId = "test", Score = 100, Accuracy = 99, Grade = "S" }, true); AssertTrue(library.Entries[0].IsCompleted); AssertEqual("S", library.Entries[0].BestGrade);
+    }
+
+    private static void TestAchievements()
+    {
+        var catalog = new AchievementCatalog(); AssertTrue(catalog.All.Count >= 50); var service = new AchievementService(catalog, []); AssertTrue(service.Unlock("first-beat")); AssertTrue(!service.Unlock("missing"));
+    }
+
+    private static void TestCampaign()
+    {
+        var worlds = CampaignCatalog.CreateDefault(); var progress = new CampaignProgress(); progress.RecordStage("world-1-stage-1", 3, worlds); AssertTrue(progress.IsUnlocked(worlds[0].Stages[1])); AssertEqual(3, progress.TotalStars);
     }
 
     private static void Run(string name, Action test)
