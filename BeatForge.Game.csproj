@@ -3,8 +3,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>BeatForge.Game</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../BeatForge.Core/BeatForge.Core.csproj" />
+    <ProjectReference Include="src/BeatForge.Core/BeatForge.Core.csproj" />
+    <Compile Include="Scripts/*.cs" />
   </ItemGroup>
 </Project>

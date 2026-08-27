@@ -1,5 +1,6 @@
 using BeatForge.Core;
 using Godot;
+using System;
 using System.Text.Json;
 
 namespace BeatForge.Game;
@@ -98,8 +99,8 @@ public partial class Main : Control
         info.AddThemeConstantOverride("separation", 6);
         card.AddChild(info);
         info.AddChild(new Label { Text = _chart.Metadata.Title });
-        info.AddChild(new Label { Text = $"{_chart.Metadata.Artist}  •  {_chart.Metadata.Difficulty} { _chart.Metadata.DifficultyRating }" });
-        info.AddChild(new Label { Text = $"{_chart.Notes.Count} notes  •  { _chart.InitialBpm:0 } BPM  •  Original / Offline" });
+        info.AddChild(new Label { Text = $"{_chart.Metadata.Artist}  •  {_chart.Metadata.Difficulty} {_chart.Metadata.DifficultyRating}" });
+        info.AddChild(new Label { Text = $"{_chart.Notes.Count} notes  •  {_chart.InitialBpm:0} BPM  •  Original / Offline" });
         var play = AddButton("PLAY", () => ShowGameplay(), info);
         play.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         root.AddChild(card);
