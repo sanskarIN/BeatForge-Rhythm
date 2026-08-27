@@ -13,6 +13,7 @@ public sealed class LocalPlayerData
     public HashSet<string> FavoriteChartIds { get; set; } = [];
     public Dictionary<string, int> BestScores { get; set; } = [];
     public Dictionary<string, double> BestAccuracy { get; set; } = [];
+    public CampaignProgress Campaign { get; set; } = new();
 }
 
 public sealed class LocalDataStore
@@ -60,5 +61,8 @@ public sealed class LocalDataStore
         data.FavoriteChartIds ??= [];
         data.BestScores ??= [];
         data.BestAccuracy ??= [];
+        data.Campaign ??= new();
+        data.Campaign.StarsByStage ??= [];
+        data.Campaign.UnlockedStages ??= ["world-1-stage-1"];
     }
 }

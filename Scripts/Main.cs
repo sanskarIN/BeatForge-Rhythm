@@ -74,6 +74,7 @@ public partial class Main : Control
         _content.AddChild(Section("PLAY", _purple));
         AddButton("PLAY PULSE GARDEN", () => ShowGameplay());
         AddButton("SONG LIBRARY", () => ShowLibrary());
+        AddButton("CAMPAIGN", () => ShowCampaign());
         AddButton("PRACTICE MODE", () => ShowGameplay(true));
         _content.AddChild(Section("CREATE", _accent));
         AddButton("CHART EDITOR", () => ShowEditor());
@@ -128,6 +129,25 @@ public partial class Main : Control
         favorite.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         info.AddChild(new Label { Text = $"Best score: {_library.Entries[0].BestScore:000000}   Best accuracy: {_library.Entries[0].BestAccuracy:0.0}%" });
         root.AddChild(card);
+        root.AddChild(AddButton("BACK", NavigateHome));
+    }
+
+    private void ShowCampaign()
+    {
+        ClearScreen();
+        var root = CreateScreen("CAMPAIGN", "Unlock themed stages, earn stars, and face boss rhythms.");
+        foreach (var world in CampaignCatalog.CreateDefault())
+        {
+            root.AddChild(new Label { Text = $"{world.Title.ToUpperInvariant()}  •  {world.Theme}" });
+            foreach (var stage in world.Stages)
+            {
+                var unlocked = _playerData.Campaign.IsUnlocked(stage);
+                var stars = _playerData.Campaign.StarsByStage.TryGetValue(stage.Id, out var value) ? value : 0;
+                var stageButton = AddButton($"{(unlocked ? "▶" : "LOCKED")} {stage.Title}   {new string('★', stars)}{new string('☆', 3 - stars)}{(stage.IsBoss ? "   BOSS" : "")}", () => ShowGameplay(), root);
+                stageButton.Disabled = !unlocked;
+            }
+        }
+        root.AddChild(new Label { Text = $"Total stars: {_playerData.Campaign.TotalStars}" });
         root.AddChild(AddButton("BACK", NavigateHome));
     }
 

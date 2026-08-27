@@ -15,6 +15,7 @@ static class Program
         Run("validator rejects malformed charts", TestValidation);
         Run("editor undo and redo restore edits", TestEditorUndoRedo);
         Run("replay records inputs and judgements", TestReplay);
+        Run("replay JSON round trips safely", TestReplayJson);
         Run("calibration calculates and clamps offsets", TestCalibration);
         Run("local player data saves and loads atomically", TestLocalData);
         Run("song library searches and records results", TestLibrary);
@@ -91,6 +92,13 @@ static class Program
     {
         var replay = new ReplayRecorder("chart", 1); replay.RecordInput(1.2, 2, "hit"); replay.RecordJudgement(1.2, "n1", Judgement.Perfect, 4);
         AssertEqual("chart", replay.Data.ChartId); AssertEqual(1, replay.Data.Inputs.Count); AssertEqual(Judgement.Perfect, replay.Data.Judgements[0].Judgement);
+    }
+
+    private static void TestReplayJson()
+    {
+        var recorder = new ReplayRecorder("chart", 1); recorder.RecordInput(1, 0, "hit"); recorder.RecordJudgement(1, "n1", Judgement.Great, -20);
+        var copy = ReplayJson.Deserialize(ReplayJson.Serialize(recorder.Data)); AssertEqual("chart", copy.ChartId); AssertEqual(Judgement.Great, copy.Judgements[0].Judgement);
+        AssertThrows<InvalidDataException>(() => ReplayJson.Deserialize("{\"formatVersion\":99,\"chartId\":\"x\"}"));
     }
 
     private static void TestCalibration()
