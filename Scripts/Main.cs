@@ -14,10 +14,17 @@ public partial class Main : Control
     private VBoxContainer _content = null!;
     private Label _status = null!;
     private BeatChart _chart = null!;
+    private LocalPlayerData _playerData = new();
+    private LocalDataStore _dataStore = null!;
+    private readonly SongLibrary _library = new();
+    private AchievementService _achievements = null!;
     private bool _reducedEffects;
 
     public override void _Ready()
     {
+        _dataStore = new LocalDataStore(ProjectSettings.GlobalizePath("user://player-data.json"));
+        _playerData = _dataStore.Load();
+        _achievements = new AchievementService(new AchievementCatalog(), _playerData.UnlockedAchievements);
         LoadChart();
         BuildMenu();
     }
@@ -26,6 +33,15 @@ public partial class Main : Control
     {
         var path = ProjectSettings.GlobalizePath("res://charts/pulse-garden.json");
         _chart = ChartJson.Deserialize(FileAccess.GetFileAsString(path));
+        _playerData.BestScores.TryGetValue(_chart.Metadata.Id, out var bestScore);
+        _playerData.BestAccuracy.TryGetValue(_chart.Metadata.Id, out var bestAccuracy);
+        _library.AddOrReplace(new SongEntry
+        {
+            Chart = _chart,
+            IsFavorite = _playerData.FavoriteChartIds.Contains(_chart.Metadata.Id),
+            BestScore = bestScore,
+            BestAccuracy = bestAccuracy
+        });
     }
 
     private void BuildMenu()
@@ -103,6 +119,14 @@ public partial class Main : Control
         info.AddChild(new Label { Text = $"{_chart.Notes.Count} notes  •  {_chart.InitialBpm:0} BPM  •  Original / Offline" });
         var play = AddButton("PLAY", () => ShowGameplay(), info);
         play.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        var favorite = AddButton(_library.Entries[0].IsFavorite ? "★ FAVORITED" : "☆ FAVORITE", () =>
+        {
+            var isFavorite = _library.ToggleFavorite(_chart.Metadata.Id);
+            if (isFavorite) _playerData.FavoriteChartIds.Add(_chart.Metadata.Id); else _playerData.FavoriteChartIds.Remove(_chart.Metadata.Id);
+            SaveData();
+        }, info);
+        favorite.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        info.AddChild(new Label { Text = $"Best score: {_library.Entries[0].BestScore:000000}   Best accuracy: {_library.Entries[0].BestAccuracy:0.0}%" });
         root.AddChild(card);
         root.AddChild(AddButton("BACK", NavigateHome));
     }
@@ -111,14 +135,18 @@ public partial class Main : Control
     {
         ClearScreen();
         var root = CreateScreen("SETTINGS", "Make the playfield feel right for you.");
-        var reduced = new CheckButton { Text = "Reduced visual effects", ButtonPressed = _reducedEffects };
-        reduced.Toggled += value => { _reducedEffects = value; SetStatus(value ? "Reduced effects enabled." : "Full effects enabled."); };
+        var reduced = new CheckButton { Text = "Reduced visual effects", ButtonPressed = _playerData.Settings.Accessibility.ReducedMotion };
+        reduced.Toggled += value => { _reducedEffects = value; _playerData.Settings.Accessibility.ReducedMotion = value; SaveData(); };
         root.AddChild(reduced);
-        root.AddChild(new HSlider { MinValue = 0.5, MaxValue = 1.5, Step = 0.05, Value = 1.0, TooltipText = "Note size" });
+        var noteScale = new HSlider { MinValue = 0.5, MaxValue = 1.5, Step = 0.05, Value = _playerData.Settings.Accessibility.NoteScale, TooltipText = "Note size" };
+        noteScale.ValueChanged += value => { _playerData.Settings.Accessibility.NoteScale = value; SaveData(); };
+        root.AddChild(noteScale);
         root.AddChild(new Label { Text = "Note size   100%" });
-        root.AddChild(new CheckButton { Text = "Large-button mode" });
-        root.AddChild(new CheckButton { Text = "Vibration feedback" });
-        root.AddChild(new Label { Text = "Audio offset: 0 ms\nInput offset: 0 ms\nCalibration history: none", AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        var largeButtons = new CheckButton { Text = "Large-button mode", ButtonPressed = _playerData.Settings.Accessibility.LargeButtonMode };
+        largeButtons.Toggled += value => { _playerData.Settings.Accessibility.LargeButtonMode = value; SaveData(); }; root.AddChild(largeButtons);
+        var vibration = new CheckButton { Text = "Vibration feedback", ButtonPressed = _playerData.Settings.Accessibility.VibrationEnabled };
+        vibration.Toggled += value => { _playerData.Settings.Accessibility.VibrationEnabled = value; SaveData(); }; root.AddChild(vibration);
+        root.AddChild(new Label { Text = $"Audio offset: {_playerData.Calibration.AudioOffsetMs:0} ms\nInput offset: {_playerData.Calibration.InputOffsetMs:0} ms\nCalibration history: {_playerData.Calibration.History.Count} runs", AutowrapMode = TextServer.AutowrapMode.WordSmart });
         root.AddChild(AddButton("BACK", NavigateHome));
     }
 
@@ -153,6 +181,7 @@ public partial class Main : Control
 
     private Label Section(string text, Color color) { var label = new Label { Text = text }; label.AddThemeColorOverride("font_color", color); label.AddThemeFontSizeOverride("font_size", 14); return label; }
     private void SetStatus(string text) { if (IsInstanceValid(_status)) _status.Text = text; }
+    private void SaveData() => _dataStore.Save(_playerData);
     private void ClearScreen() { foreach (var child in GetChildren()) child.QueueFree(); }
     private void NavigateHome() { ClearScreen(); CallDeferred(nameof(BuildMenu)); }
     private void AddColorRect(Color color, Vector2 anchor, Vector2 size) { var rect = new ColorRect { Color = color }; rect.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect); AddChild(rect); MoveChild(rect, 0); }
