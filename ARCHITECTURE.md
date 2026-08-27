@@ -25,7 +25,7 @@ The Godot project is intentionally thin. `Main.cs` owns screen navigation and cr
 
 ## Persistence roadmap
 
-The current slice serializes charts and replays as JSON and stores settings locally. A future SQLite adapter will implement the same storage interfaces for song-library indexes, statistics, calibration history, and achievement progress. No gameplay code should depend directly on SQLite.
+The current slice serializes charts, replays, settings, calibration history, statistics, favorites, best scores, and achievement progress as versioned local JSON. A future SQLite adapter can implement the same storage boundary for larger song-library indexes without changing gameplay. No gameplay code should depend directly on SQLite.
 
 ## Timing contract
 
