@@ -167,7 +167,14 @@ public partial class Main : Control
         var vibration = new CheckButton { Text = "Vibration feedback", ButtonPressed = _playerData.Settings.Accessibility.VibrationEnabled };
         vibration.Toggled += value => { _playerData.Settings.Accessibility.VibrationEnabled = value; SaveData(); }; root.AddChild(vibration);
         root.AddChild(new Label { Text = $"Audio offset: {_playerData.Calibration.AudioOffsetMs:0} ms\nInput offset: {_playerData.Calibration.InputOffsetMs:0} ms\nCalibration history: {_playerData.Calibration.History.Count} runs", AutowrapMode = TextServer.AutowrapMode.WordSmart });
+        root.AddChild(AddButton("RUN CALIBRATION", () => ShowCalibration()));
         root.AddChild(AddButton("BACK", NavigateHome));
+    }
+
+    private void ShowCalibration()
+    {
+        ClearScreen();
+        AddChild(new CalibrationView(_playerData.Calibration, SaveData, NavigateHome));
     }
 
     private void ShowAbout()
